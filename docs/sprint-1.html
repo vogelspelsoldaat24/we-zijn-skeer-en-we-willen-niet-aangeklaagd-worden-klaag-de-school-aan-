@@ -1,0 +1,550 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Monster Battle Academy - PHP en Scrum voor mbo 4"
+    />
+    <title>
+      Sprint 1 · Bouw de procedurele basisgame | Monster Battle Academy
+    </title>
+    <style>
+      :root {
+        --navy: #17213b;
+        --indigo: #3153a5;
+        --blue: #3588d8;
+        --sky: #e9f5ff;
+        --paper: #f4f7fb;
+        --ink: #1e2a40;
+        --muted: #61738b;
+        --line: #dce5ef;
+        --yellow: #ffcb4d;
+        --teal: #16a58d;
+        --red: #e84c65;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        color: var(--ink);
+        background: var(--paper);
+        font:
+          16px/1.6 system-ui,
+          -apple-system,
+          "Segoe UI",
+          sans-serif;
+      }
+      h1,
+      h2,
+      h3 {
+        line-height: 1.18;
+      }
+      a {
+        color: #255eb7;
+      }
+      header {
+        padding: 44px 20px 30px;
+        background: radial-gradient(
+          circle at 95% 12%,
+          #4e75c4 0,
+          #263a6e 34%,
+          #16213c 80%
+        );
+        color: #fff;
+      }
+      .container {
+        width: min(100%, 1080px);
+        padding: 0 22px;
+        margin: auto;
+      }
+      .subtitle {
+        font-size: 0.85rem;
+        letter-spacing: 0.16em;
+        font-weight: 800;
+        color: #a4e7f0;
+        text-transform: uppercase;
+      }
+      h1 {
+        font-size: clamp(2.1rem, 5vw, 3.35rem);
+        margin: 8px 0;
+      }
+      header p {
+        max-width: 760px;
+        color: #e2eaf9;
+        margin: 0;
+      }
+      nav {
+        display: flex;
+        gap: 7px;
+        flex-wrap: wrap;
+        margin-top: 23px;
+      }
+      nav a {
+        color: #eef5ff;
+        text-decoration: none;
+        border: 1px solid #ffffff52;
+        padding: 5px 11px;
+        border-radius: 25px;
+        font-weight: 650;
+        font-size: 0.88rem;
+      }
+      nav a:hover,
+      nav a[aria-current="page"] {
+        color: #17213b;
+        background: #ffcb4d;
+        border-color: #ffcb4d;
+      }
+      main {
+        padding: 26px 0 65px;
+      }
+      .panel {
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: 17px;
+        padding: 23px;
+        margin: 0 0 18px;
+        box-shadow: 0 5px 20px #1f467609;
+      }
+      .panel h2:first-child,
+      .panel h3:first-child {
+        margin-top: 0;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+      }
+      .panel-grid {
+        display: grid;
+        grid-template-columns: 1.4fr 0.6fr;
+        gap: 18px;
+      }
+      .tag {
+        display: inline-block;
+        padding: 4px 11px;
+        font-size: 0.78rem;
+        font-weight: 800;
+        border-radius: 25px;
+        margin: 0 5px 8px 0;
+        background: #eaf1ff;
+        color: #244da4;
+      }
+      .tag.green {
+        background: #e0f6ef;
+        color: #0b8069;
+      }
+      .tag.gold {
+        background: #fff3cf;
+        color: #805800;
+      }
+      .tag.purple {
+        background: #ece7ff;
+        color: #6046a9;
+      }
+      .sprite {
+        width: 132px;
+        height: 132px;
+        object-fit: contain;
+        image-rendering: pixelated;
+        filter: drop-shadow(0 12px 6px #18233526);
+      }
+      .spritepanel {
+        text-align: center;
+        background: linear-gradient(150deg, #e5f6fd, #fbf0dd);
+      }
+      .spritepanel p {
+        font-weight: 700;
+        margin: 0;
+      }
+      .note {
+        padding: 14px 18px;
+        border-left: 4px solid var(--blue);
+        background: #eff7ff;
+        border-radius: 9px;
+        margin: 18px 0;
+      }
+      .note.warning {
+        border-color: #dc9e2f;
+        background: #fff8e7;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.94rem;
+      }
+      td,
+      th {
+        text-align: left;
+        vertical-align: top;
+        padding: 10px 11px;
+        border-bottom: 1px solid var(--line);
+      }
+      th {
+        background: #f2f6fb;
+      }
+      ul,
+      ol {
+        padding-left: 22px;
+      }
+      li {
+        margin: 6px 0;
+      }
+      code {
+        background: #eaf0f6;
+        padding: 1px 5px;
+        border-radius: 5px;
+        font-size: 0.92em;
+      }
+      pre {
+        padding: 17px;
+        color: #eff5ff;
+        background: #17213b;
+        border-radius: 11px;
+        overflow: auto;
+        font-size: 0.91rem;
+      }
+      pre code {
+        background: transparent;
+        color: inherit;
+      }
+      .checklist {
+        list-style: none;
+        padding: 0;
+      }
+      .checklist li {
+        position: relative;
+        padding-left: 26px;
+      }
+      .checklist li:before {
+        content: "□";
+        color: var(--blue);
+        position: absolute;
+        left: 2px;
+        font-weight: 800;
+      }
+      .timeline {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+      }
+      .timeline > div {
+        background: #f2f7ff;
+        padding: 17px;
+        border-radius: 13px;
+        border: 1px solid #dce8ff;
+      }
+      .timeline strong {
+        display: block;
+      }
+      .muted {
+        color: var(--muted);
+      }
+      .small {
+        font-size: 0.88rem;
+      }
+      footer {
+        border-top: 1px solid var(--line);
+        padding: 20px 0 40px;
+        color: var(--muted);
+        font-size: 0.82rem;
+      }
+      @media (max-width: 720px) {
+        .grid,
+        .panel-grid,
+        .timeline {
+          grid-template-columns: 1fr;
+        }
+        .spritepanel {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          justify-content: center;
+        }
+        .sprite {
+          width: 105px;
+          height: 105px;
+        }
+        header {
+          padding-top: 26px;
+        }
+      }
+
+      .lesson-banner {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 18px;
+        flex-wrap: wrap;
+      }
+      .datebox {
+        background: #eaf1ff;
+        color: #244da4;
+        border-radius: 12px;
+        padding: 12px 16px;
+        font-weight: 750;
+      }
+      .lesson-tag {
+        font-weight: 750;
+        font-size: 0.83rem;
+        color: #245eb5;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      .note.neutral {
+        background: #f3f6ff;
+        border-color: #a6b9f0;
+      }
+      .mini {
+        font-size: 0.84rem;
+        color: var(--muted);
+      }
+      .lineup {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+      .lineup > div {
+        background: #f4f8ff;
+        border: 1px solid var(--line);
+        border-radius: 13px;
+        padding: 17px;
+      }
+      .lineup h3 {
+        margin: 7px 0;
+      }
+      .milestone {
+        display: inline-block;
+        background: #e0f6ef;
+        color: #0b8069;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        padding: 3px 10px;
+        font-weight: 800;
+      }
+      @media (max-width: 720px) {
+        .lineup {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <div class="subtitle">PROCEDUREEL PHP — GEEN OOP</div>
+        <h1>Sprint 1 · Bouw de procedurele basisgame</h1>
+        <p>
+          Sprint 1: 18 en 25 november 2026. Een speelbare battle waarin de
+          speler kan aanvallen, de tegenstander terugslaat en er een winnaar
+          verschijnt.
+        </p>
+        <nav aria-label="Navigatie">
+          <a href="kickoff.html">Kick-off</a><a href="sprint-1.html">Sprint 1</a
+          ><a href="sprint-2.html">Sprint 2</a
+          ><a href="sprint-3.html">Sprint 3</a>
+        </nav>
+      </div>
+    </header>
+    <main class="container">
+      <div class="panel-grid">
+        <section class="panel">
+          <span class="tag green">Sprint 1 / 3</span
+          ><span class="tag gold">18 en 25 november 2026</span>
+          <h2>Jullie missie</h2>
+          <p>
+            Een speelbare battle waarin de speler kan aanvallen, de tegenstander
+            terugslaat en er een winnaar verschijnt.
+          </p>
+          <div class="note">
+            <strong>User story</strong><br />Als speler wil ik een monster
+            kunnen kiezen en tegen een ander monster vechten, zodat ik het
+            gevecht echt kan spelen.
+          </div>
+        </section>
+        <section class="panel spritepanel">
+          <img
+            class="sprite"
+            src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png"
+            alt="Voorbeeld Pokémon-sprite"
+          />
+          <p>PROCEDUREEL PHP — GEEN OOP</p>
+        </section>
+      </div>
+      <div class="grid">
+        <section class="panel">
+          <h2>Nieuwe programmeerconcepten</h2>
+          <ul class="">
+            <li>Variabelen, arrays en if/else</li>
+            <li>Functies, parameters en return</li>
+            <li>Formulieracties verwerken via POST</li>
+            <li>PHP-sessie voor spelstatus</li>
+            <li>Eenvoudige beurtlogica en een winnaar bepalen</li>
+          </ul>
+        </section>
+        <section class="panel">
+          <h2>Programmeertaken</h2>
+          <ol>
+            <li>
+              Maak de aanvalsknop werkend: lees de actie uit het formulier.
+            </li>
+            <li>
+              Bereken schade en verlaag de HP van een monster. HP wordt nooit
+              negatief.
+            </li>
+            <li>Voeg een tegenaanval toe zolang de tegenstander leeft.</li>
+            <li>
+              Laat zien wat er gebeurde in de battle-log en wie gewonnen heeft.
+            </li>
+            <li>
+              Bewaar HP en beurtstatus tussen klikken met de bestaande sessie.
+            </li>
+            <li>
+              Voeg een eenvoudige reset toe. Als tijd over is: laat de speler
+              tussen twee monsters kiezen.
+            </li>
+          </ol>
+        </section>
+      </div>
+      <section class="panel">
+        <h2>Acceptatiecriteria en beoordeling: Wat is de verwachting?</h2>
+        <ul class="checklist">
+          <li>Elke teamgenoot heeft minimaal een pullrequest voltooid.</li>
+          <li>
+            Begrip van code tijdens sprint review is belangrijker dan resultaat.
+          </li>
+          <li>De game is in de browser te spelen.</li>
+          <li>
+            Een klik op Aanvallen leidt tot schade en een actuele HP-balk.
+          </li>
+          <li>
+            De tegenstander kan terugvechten en er is een winnaar of verliezer.
+          </li>
+          <li>
+            HP komt nooit onder nul; na winst/verlies kan de speler herstarten.
+          </li>
+          <li>De spelstatus blijft behouden tussen formulieracties.</li>
+          <li>
+            De game gebruikt <strong>uitsluitend procedurele PHP</strong>:
+            arrays en functies, geen classes of objects.
+          </li>
+        </ul>
+      </section>
+      <section class="panel">
+        <h2>Lesmomenten en Scrum-activiteiten</h2>
+        <div class="lineup">
+          <div>
+            <div class="lesson-tag">Lesmoment 1</div>
+            <h3>18 november — Sprint Planning</h3>
+            <ol>
+              <li>Korte uitleg: wat is Scrum en hoe werkt het GitHub-bord?</li>
+              <li>
+                Docent is de product owner en klant, bepaal samen wie scrum
+                master is en wie teamlid. Scrummaster is ook samen met docent
+                een beetje product owner. Laat de rol per sprint rouleren zodat iedereen ervaring opdoet met alle rollen.
+              </li>
+              <li>
+                Maak met elkaar en met behulp van AI een plan voor de eerste
+                sprint
+              </li>
+              <li>
+                Maak het GitHub Project-bord en schrijf de eerste Issues op
+                basis van het plan.
+              </li>
+              <li>
+                Verdeel en assign de taken in github en maak per taak een branch
+                waar je op kan werken.
+              </li>
+              <li>
+                Werk aan je eigen taken / stories en maak Pull Requests review
+                dan elkaars werk.
+              </li>
+            </ol>
+          </div>
+          <div>
+            <div class="lesson-tag">Lesmoment 2</div>
+            <h3>25 november — Review + tussenpresentatie aan de klas</h3>
+            <ol>
+              <li>
+                Werk verder aan je eigen taken zorg dat alles werkt en klaar is
+                voor de presentatie.
+              </li>
+              <li>Laat een live battle zien. Niet alleen screenshots.</li>
+              <li>
+                Leg één paar lastige functies uit en wijs de bijbehorende
+                Issue/PR aan. Vertel wat jullie hebben geleerd deze sprint.
+              </li>
+              <li>
+                Verzamel feedback van de klas en leg nieuwe ideeën vast als
+                Issues/ taken voor de volgende sprint.
+              </li>
+              <li>
+                Zorg dat iedereen wat verteld en zorg dat jullie voorbereid zijn
+                voor vragen.
+              </li>
+            </ol>
+          </div>
+        </div>
+      </section>
+      <section class="panel">
+        <h2>GitHub: wat moet zichtbaar zijn?</h2>
+        <ul class="checklist">
+          <li>
+            Maak Issues voor de taken en gebruik label <code>sprint-1</code>.
+          </li>
+          <li>
+            Zet taken op het GitHub Project-bord: Backlog → Ready → In Progress
+            → Testing → Review → Done.
+          </li>
+          <li>
+            Werk op herkenbare branches, commit regelmatig, maak Pull Requests
+            en vraag een review.
+          </li>
+          <li>
+            Koppel een Pull Request aan de Issue (bijvoorbeeld
+            <code>Closes #12</code>).
+          </li>
+          <li>
+            Houd het bord bij en toon tijdens de presentatie jullie afgeronde
+            Issues.
+          </li>
+        </ul>
+      </section>
+      <section class="panel">
+        <h2>Definition of Done</h2>
+        <ul class="checklist">
+          <li>Werkende code staat op <code>main</code>.</li>
+          <li>Acceptatiecriteria zijn getest.</li>
+          <li>Een teamgenoot heeft de Pull Request nagekeken.</li>
+          <li>Relevante Issues zijn bijgewerkt en op Done gezet.</li>
+          <li>
+            De functionaliteit wordt begrepen en kan live worden gedemonstreerd
+            en uitgelegd.
+          </li>
+        </ul>
+      </section>
+      <section class="panel">
+        <h2>Scopebewaking</h2>
+        <p>
+          In deze sprint geen OOP. De volledige basisbattle gaat vóór extra
+          animaties. Een monsterkeuzemenu is alleen extra als het team tijd
+          heeft.
+        </p>
+        <div class="note">
+          <strong>Reflectievraag:</strong> Wat was lastig aan het bewaren van
+          veel monstergegevens in arrays? Neem dit mee naar de OOP-omzetting in
+          Sprint 2.
+        </div>
+      </section>
+    </main>
+    <footer class="container">
+      Monster Battle Academy · MBO 4 · Schooljaar 2026–2027 · Pokémon-sprites
+      dienen als voorbeeld; respecteer auteursrechten bij publicatie.
+    </footer>
+  </body>
+</html>
