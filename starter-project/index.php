@@ -44,5 +44,18 @@ $opponent = $game['opponent'];
   <form class="actions" method="post"><button type="submit" name="action" value="attack" class="primary">⚡ Aanvallen</button><button type="submit" name="action" value="switch">↔ Wisselen</button><button type="submit" name="action" value="reset">↻ Opnieuw</button></form></section>
   <p class="hint">De knoppen zijn zichtbaar, maar de spelregels werken nog niet. Die programmeer je zelf!</p>
 </main>
+
+<form id="opponentTurnForm" method="post">
+    <input type="hidden" name="action" value="opponent_attack">
+</form>
+
+<?php if (!empty($game['opponent_turn_pending'])): ?>
+<script>
+    setTimeout(function() {
+        document.getElementById('opponentTurnForm').submit();
+    }, 1500);
+</script>
+<?php endif; ?>
+
 </body>
 </html>
