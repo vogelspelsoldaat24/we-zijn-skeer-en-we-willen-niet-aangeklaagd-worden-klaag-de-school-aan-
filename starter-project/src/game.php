@@ -8,35 +8,142 @@
 
 function startGame(): void
 {
-    // TODO SPRINT 1: bepaal zelf welke gegevens ieder monster nodig heeft.
-    // Deze voorbeeldgegevens zijn alleen bedoeld om het scherm direct te kunnen tonen.
     $_SESSION['game'] = [
-        'player' => ['name' => 'Jouw monster', 'hp' => 100, 'max_hp' => 100, 'attack' => 15],
-        'opponent' => ['name' => 'Wild monster', 'hp' => 100, 'max_hp' => 100, 'attack' => 12],
+        'player' => [
+            'name' => 'Charmander',
+            'pokemon_id' => 4,
+            'hp' => 100,
+            'max_hp' => 100,
+            'attack' => 15
+        ],
+        'reserve' => [
+            'name' => 'Bulbasaur',
+            'pokemon_id' => 1,
+            'hp' => 100,
+            'max_hp' => 100,
+            'attack' => 12
+        ],
+        'opponent' => [
+            'name' => 'Wild monster',
+            'pokemon_id' => 25,
+            'hp' => 100,
+            'max_hp' => 100,
+            'attack' => 12
+        ],
         'message' => 'Een wild monster verschijnt!'
     ];
 }
 
+
 function handleAction(array $formData): void
 {
-    // TODO SPRINT 1: kijk welke knop is aangeklikt.
-    // TODO SPRINT 1: verwerk de beurt en controleer de winnaar.
-    // EXTRA SPRINT 1 / SPRINT 3: voeg wisselen tussen monsters toe.
+    $action = $formData['action'] ?? '';
+    $game = $_SESSION['game'];
+
+    if ($action === 'reset') {
+        resetGame();
+        return;
+    }
+
+    if ($action === 'switch') {
+        switchMonster();
+        return;
+    }
+
+    if ($action === 'attack') {
+
+        // Controleer of de tegenstander nog aan de beurt is.
+        if (!empty($game['opponent_turn_pending'])) {
+            return;
+        }
+
+        if (isDefeated($game['opponent']) || isDefeated($game['player'])) {
+            return;
+        }
+
+        // Jouw Pokémon valt aan.
+        $damage = calculateDamage($game['player'], $game['opponent']);
+
+        $game['opponent']['hp'] = max(
+            0,
+            $game['opponent']['hp'] - $damage
+        );
+
+        $game['message'] = $game['player']['name']
+            . ' doet ' . $damage . ' damage!';
+
+        // Tegenstander mag terug aanvallen.
+        if (!isDefeated($game['opponent'])) {
+            $game['opponent_turn_pending'] = true;
+        }
+
+        $_SESSION['game'] = $game;
+        return;
+    }
+
+    if ($action === 'opponent_attack') {
+
+        if (empty($game['opponent_turn_pending'])) {
+            return;
+        }
+
+        $game['opponent_turn_pending'] = false;
+
+        if (!isDefeated($game['opponent']) && !isDefeated($game['player'])) {
+
+            // Wilde Pokémon valt terug aan.
+            $damage = calculateDamage($game['opponent'], $game['player']);
+
+            $game['player']['hp'] = max(
+                0,
+                $game['player']['hp'] - $damage
+            );
+
+            if (isDefeated($game['player'])) {
+                $game['message'] = $game['opponent']['name']
+                    . ' heeft jouw Pokémon verslagen!';
+            } else {
+                $game['message'] = $game['opponent']['name']
+                    . ' doet ' . $damage . ' damage terug!';
+            }
+        }
+
+        $_SESSION['game'] = $game;
+        return;
+    }
 }
+
 
 function calculateDamage(array $attacker, array $defender): int
 {
-    // TODO SPRINT 1: bereken de hoeveelheid schade.
-    return 0;
+    return rand(15, 75);
 }
 
 function isDefeated(array $monster): bool
 {
-    // TODO SPRINT 1: controleer of dit monster verslagen is.
-    return false;
+    return $monster['hp'] <= 0;
 }
 
 function resetGame(): void
 {
-    // TODO SPRINT 1: maak een nieuwe battle mogelijk.
+    startGame();
+}
+
+function setBattleMessage(string $message): void
+{
+    $_SESSION['game']['message'] = $message;
+}
+
+function switchMonster(): void
+{
+    $temp = $_SESSION['game']['player'];
+
+    $_SESSION['game']['player'] = $_SESSION['game']['reserve'];
+
+    $_SESSION['game']['reserve'] = $temp;
+
+    setBattleMessage(
+        'Je bent gewisseld naar ' .
+        $_SESSION['game']['player']['name'] . '!'
+    );
 }
